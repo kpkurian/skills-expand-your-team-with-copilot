@@ -476,6 +476,70 @@ footer {
   font-size: 0.8rem;
 }
 
+/* Share section */
+.share-section {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-light);
+}
+
+.share-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.share-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.share-button {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, border-color 0.2s;
+  color: var(--text-secondary);
+}
+
+.share-button:hover {
+  background-color: var(--border-light);
+  border-color: var(--border-focus);
+}
+
+/* Share confirmation toast */
+.share-confirmation {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background-color: rgba(33, 33, 33, 0.9);
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.share-confirmation-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* Search and Filter Components - Updated for Sidebar */
 .search-box {
   display: flex;

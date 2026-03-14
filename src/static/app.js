@@ -569,6 +569,27 @@ document.addEventListener("DOMContentLoaded", () => {
         `
         }
       </div>
+      <div class="share-section">
+        <span class="share-label">Share:</span>
+        <div class="share-buttons">
+          <button class="share-button share-copy tooltip" data-activity="${name}" aria-label="Copy link">
+            🔗
+            <span class="tooltip-text">Copy link to this activity</span>
+          </button>
+          <button class="share-button share-email tooltip" data-activity="${name}" aria-label="Share via email">
+            ✉️
+            <span class="tooltip-text">Share via email</span>
+          </button>
+          <button class="share-button share-whatsapp tooltip" data-activity="${name}" aria-label="Share via WhatsApp">
+            💬
+            <span class="tooltip-text">Share via WhatsApp</span>
+          </button>
+          <button class="share-button share-twitter tooltip" data-activity="${name}" aria-label="Share on X (Twitter)">
+            🐦
+            <span class="tooltip-text">Share on X (Twitter)</span>
+          </button>
+        </div>
+      </div>
     `;
 
     // Add click handlers for delete buttons
@@ -587,7 +608,74 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Add click handlers for share buttons
+    const sharePlatforms = ["copy", "email", "whatsapp", "twitter"];
+    sharePlatforms.forEach((platform) => {
+      activityCard.querySelector(`.share-${platform}`).addEventListener("click", () => {
+        shareActivity(platform, name, details);
+      });
+    });
+
     activitiesList.appendChild(activityCard);
+  }
+
+  // Build a shareable URL for an activity
+  function getActivityShareUrl(activityName) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("activity", activityName);
+    return url.toString();
+  }
+
+  // Handle sharing for different platforms
+  function shareActivity(platform, name, details) {
+    const shareUrl = getActivityShareUrl(name);
+    const formattedSchedule = formatSchedule(details);
+    const spotsLeft = details.max_participants - details.participants.length;
+    const shareText = `Check out "${name}" at Mergington High School! ${details.description} Schedule: ${formattedSchedule}. ${spotsLeft} spot(s) left.`;
+
+    if (platform === "copy") {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        showShareConfirmation("Link copied to clipboard!");
+      }).catch(() => {
+        // Fallback for browsers without clipboard API
+        try {
+          const tempInput = document.createElement("input");
+          tempInput.value = shareUrl;
+          document.body.appendChild(tempInput);
+          tempInput.select();
+          document.execCommand("copy");
+          document.body.removeChild(tempInput);
+          showShareConfirmation("Link copied to clipboard!");
+        } catch (_e) {
+          showShareConfirmation("Could not copy — please copy the URL manually.");
+        }
+      });
+    } else if (platform === "email") {
+      const subject = encodeURIComponent(`Join "${name}" at Mergington High School`);
+      const body = encodeURIComponent(`${shareText}\n\nLearn more: ${shareUrl}`);
+      window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
+    } else if (platform === "whatsapp") {
+      const text = encodeURIComponent(`${shareText} ${shareUrl}`);
+      window.open(`https://wa.me/?text=${text}`, "_blank");
+    } else if (platform === "twitter") {
+      const text = encodeURIComponent(`${shareText} ${shareUrl}`);
+      window.open(`https://twitter.com/intent/tweet?text=${text}`, "_blank");
+    }
+  }
+
+  // Show a brief confirmation message after sharing
+  function showShareConfirmation(message) {
+    const confirmation = document.createElement("div");
+    confirmation.className = "share-confirmation";
+    confirmation.textContent = message;
+    document.body.appendChild(confirmation);
+    setTimeout(() => {
+      confirmation.classList.add("share-confirmation-visible");
+    }, 10);
+    setTimeout(() => {
+      confirmation.classList.remove("share-confirmation-visible");
+      setTimeout(() => confirmation.remove(), 300);
+    }, 2000);
   }
 
   // Event listeners for search and filter
